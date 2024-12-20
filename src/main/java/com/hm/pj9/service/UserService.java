@@ -26,6 +26,7 @@ public class UserService {
     private CommentRepository commentRepository;
 
     @Autowired
+
     private ReplyRepository replyRepository;
 
     @Autowired

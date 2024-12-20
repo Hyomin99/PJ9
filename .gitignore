@@ -1,4 +1,5 @@
 HELP.md
+pj9.pem
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
