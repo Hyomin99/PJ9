@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프젝구_로그인</title>
+    <link rel="stylesheet" href="/css/account.css">
+    <script>
+        function validateForm(event) {
+            const userId = document.getElementById('userId').value;
+            const userPw = document.getElementById('userPw').value;
+
+            if (!userId || !userPw) {
+                event.preventDefault();
+                alert('아이디 또는 비밀번호를 입력하세요.');
+            }
+        }
+
+        window.onload = function () {
+            const message = '/*[[${message}]]*/' ;
+            if (message) {
+                alert(message); // 메시지가 있을 경우 alert 띄우기
+            }
+        };
+
+    </script>
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="cover-rep">
+        <a target="_self" href="http://localhost:8416/">P J 9</a>
+    </div>
+    <form method="post" action="http://localhost:8416/signin/check" id="login-form" onsubmit="validateForm(event)">
+        <input type="text" id="userId" name="userId" placeholder="아이디">
+        <input type="password" id="userPw" name="userPw" placeholder="비밀번호">
+        <label for="remember-check">
+            <input type="checkbox" id="remember-check" name="remember-check">아이디 저장하기
+        </label>
+        <input type="submit" value="로그인">
+    </form>
+    <div class="link-wrapper">
+        <a target="_blank" href="회원가입 주소">아이디 찾기</a> |
+        <a target="_blank" href="회원가입 주소">비밀번호 찾기</a> |
+        <a target="_self" href="http://localhost:8416/signup">회원가입</a>
+    </div>
+</div>
+</body>
+</html>

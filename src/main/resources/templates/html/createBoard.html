@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 작성</title>
+    <link rel="stylesheet" href="/css/board.css">
+    <style>
+        .image-preview {
+            max-width: 100px;
+            margin: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>게시판 작성</h1>
+<form action="http://localhost:8416/save/board" method="post" enctype="multipart/form-data">
+    <label for="title">제목:</label>
+    <input type="text" id="title" name="title" required>
+
+
+    <label for="boardType">게시판 선택:</label>
+    <select id="boardType" name="boardType" required>
+        <option value="member_search">팀원 구함</option>
+        <option value="team_search">팀 구함</option>
+        <option value="3">게시판 3</option>
+    </select>
+
+    <label for="images">이미지 업로드:</label>
+    <input type="file" id="images" name="images" accept="image/*" multiple onchange="previewImages(event)">
+
+    <div id="image-preview-container"></div>
+
+    <label for="content">내용:</label>
+    <textarea id="content" name="content" rows="10" required></textarea>
+
+    <button type="submit">작성하기</button>
+</form>
+
+<script>
+    function previewImages(event) {
+        const previewContainer = document.getElementById('image-preview-container');
+        previewContainer.innerHTML = ''; // 기존 미리보기 이미지 초기화
+
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.classList.add('image-preview');
+            previewContainer.appendChild(img);
+        }
+    }
+</script>
+
+</body>
+</html>

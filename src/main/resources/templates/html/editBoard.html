@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 수정</title>
+    <link rel="stylesheet" href="/css/board.css">
+    <style>
+        .image-preview {
+            max-width: 100px;
+            margin: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>게시글 수정</h1>
+<form action="http://localhost:8416/update/post" method="post" enctype="multipart/form-data">
+    <!-- 게시글 번호(hidden으로 유지) -->
+    <input type="hidden" id="postNum" name="postNum" th:value="${post.postNum}" required>
+
+    <!-- 제목 -->
+    <label for="title">제목:</label>
+    <input type="text" id="title" name="title" th:value="${post.title}" required>
+
+
+    <!-- 게시판 선택 -->
+    <label for="boardType">게시판 선택:</label>
+    <select id="boardType" name="boardType" required>
+        <option value="member_search" th:selected="${post.boardType == 'member_search'}">팀원 구함</option>
+        <option value="team_search" th:selected="${post.boardType == 'team_search'}">팀 구함</option>
+        <option value="3" th:selected="${post.boardType == '3'}">게시판 3</option>
+    </select>
+
+    <!-- 이미지 업로드 -->
+    <label for="images">이미지 업로드:</label>
+    <input type="file" id="images" name="images" accept="image/*" multiple onchange="previewImages(event)">
+
+
+    <!-- 내용 -->
+    <label for="content">내용:</label>
+    <textarea id="content" name="content" rows="10" required>[[${post.content}]]</textarea>
+
+    <!-- 수정 및 취소 버튼 -->
+    <button type="submit" onclick="return confirmEdit();">수정</button>
+    <button type="button" onclick="confirmCancel();">취소</button>
+</form>
+
+<script>
+    function previewImages(event) {
+        const previewContainer = document.getElementById('image-preview-container');
+        previewContainer.innerHTML = ''; // 기존 미리보기 이미지 초기화
+
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.classList.add('image-preview');
+            previewContainer.appendChild(img);
+        }
+    }
+
+        function confirmEdit() {
+        const userConfirmed = confirm("수정하시겠습니까?");
+        return userConfirmed; // true이면 제출, false이면 제출 취소
+    }
+
+        function confirmCancel() {
+        const userConfirmed = confirm("기존 페이지로 돌아가시겠습니까?");
+        if (userConfirmed) {
+        window.history.back(); // 이전 페이지로 돌아감
+    }
+    }
+</script>
+
+</body>
+</html>

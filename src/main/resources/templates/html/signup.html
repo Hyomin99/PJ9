@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프젝구_회원가입</title>
+    <link rel="stylesheet" href="/css/account.css">
+    <script>
+        function validateForm(event) {
+            const userId = document.getElementById('userId').value;
+            const userPw1 = document.getElementById('userPw1').value;
+            const userPw2 = document.getElementById('userPw2').value;
+            if (!userId || !userPw1 || !userPw2) {
+                event.preventDefault();
+                alert('모두 입력해주세요.');
+            }
+
+            if (userPw1 !== userPw2) {
+                event.preventDefault();
+                alert('입력한 두개의 비밀번호가 서로 일치하지 않습니다.');
+            }
+        }
+
+        async function checkId() {
+            const userId = document.getElementById('userId').value;
+            if (userId.trim() === "") { //빈 문자열 확인
+                alert("아이디를 입력해주세요.");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8416/signup/duplication/check', { //await 함수 사용해서 신호 올때까지 기다림 -> 비동기
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' //json 형식으로 보낸다
+                    },
+                    body: JSON.stringify({userId}) //JSON 문자열로 변환
+                });
+
+                const result = await response.json();
+                if (result.exists) {
+                    alert("이미 사용 중인 아이디입니다.");
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                }
+            } catch (error) {
+                console.error("중복 확인 요청에 실패했습니다:", error);
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="cover-rep">
+        <a target="_self" href="http://localhost:8416/">P J 9</a>
+    </div>
+    <form method="post" action="http://localhost:8416/signup/check" id="login-form" onsubmit="validateForm(event)">
+        <div class="text-button">
+            <input type="text" id="userId" name="userId" placeholder="아이디">
+            <button type="button" onclick='checkId()'>중복 확인</button>
+        </div>
+        <input type="password" id="userPw1" name="userPw1" placeholder="비밀번호">
+        <input type="password" id="userPw2" name="userPw2" placeholder="비밀번호 확인">
+        <input type="submit" value="회원가입">
+    </form>
+</div>
+</body>
+</html>

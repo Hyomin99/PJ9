@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 목록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e0e0e0;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+
+<h2>채팅 목록</h2>
+<table>
+    <thead>
+    <tr>
+        <th>상대방</th>
+        <th>최근 메시지</th>
+        <th>시간</th>
+    </tr>
+    </thead>
+    <tbody id="chatTableBody" onclick="personalContact(event)">
+    <!-- 채팅 목록이 여기에 추가됩니다. -->
+    </tbody>
+</table>
+
+<script>
+
+    fetch('http://localhost:8416/get/chat/list')
+        .then(response => response.json())
+        .then(chatList => {
+            const tbody = document.getElementById('chatTableBody');
+            const recentChats = {};
+
+            chatList.forEach(chat => {
+                if (!recentChats[chat.fromUserId] || recentChats[chat.fromUserId].transferTime < chat.transferTime) {
+                    recentChats[chat.fromUserId] = chat;
+                }
+            });
+
+            Object.values(recentChats).forEach(chat => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = chat.fromUserId;
+                row.insertCell(1).textContent = chat.text;
+                row.insertCell(2).textContent = chat.transferTime;
+            });
+        })
+        .catch(error => console.error('Error fetching chat list:', error));
+
+    function personalContact(event) {
+        const target = event.target;
+
+        // 클릭된 셀의 부모 행을 찾습니다.
+        const row = target.closest('tr');
+        if (row) {
+            const toUserId = row.cells[0].textContent; // 상대방 ID
+
+            // window.location.href = `http://localhost:8416/chat/${encodeURIComponent(toUserId)}`;
+            openSmallWindowChatContent(toUserId)
+        }
+    }
+
+    function openSmallWindowChatContent(toUserId) {
+        const url = `http://localhost:8416/chat/${encodeURIComponent(toUserId)}`; // 템플릿 리터럴 사용
+        window.open(url, '_blank', 'width=550,height=950'); // 작은 창 열기
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림</title>
+    <link rel="stylesheet" href="/css/notifications.css"> <!-- 필요시 CSS 파일 링크 -->
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .notification {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .notification a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .notification a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<!-- 게시글 알림 -->
+<div class="notifications">
+    <h4>게시글 알림</h4>
+    <div th:if="${postCountMap.size() > 0}">
+        <th:block th:each="postNotice : ${postCountMap}">
+            <div class="notification">
+                <p>
+                <ul>
+                    <li th:each="innerEntry : ${postNotice.value}">
+                        <a th:href="@{http://localhost:8416/check/notification/{postNum}(postNum=${postNotice.key} , type='post_notice')}" target="_parent"
+                           th:text="${innerEntry.key}">게시글 제목</a> 게시물에 해당하는
+                        <span th:text="${innerEntry.value}">알림 수</span>개의 댓글 알림이 있습니다.
+                    </li>
+                </ul>
+                </p>
+            </div>
+        </th:block>
+    </div>
+    <div th:if="${postCountMap.size() == 0}">
+        <p>새로운 게시글 알림이 없습니다.</p>
+    </div>
+</div>
+
+<!-- 댓글 알림 -->
+<div class="notifications">
+    <h4>댓글 알림</h4> <!-- 제목 수정 -->
+    <div th:if="${commentCountMap.size() > 0}">
+        <th:block th:each="commentNotice : ${commentCountMap}">
+            <div class="notification">
+                <p>
+                <ul>
+                    <li th:each="innerEntry : ${commentNotice.value}">
+                        <a th:href="@{http://localhost:8416/check/notification/{postNum}(postNum=${commentNotice.key} , type='comment_notice')}" target="_parent"
+                           th:text="${innerEntry.key}">게시글 제목</a> 게시글에 작성하신 회원님의 댓글에
+                        <span th:text="${innerEntry.value}">알림 수</span>개의 알림이 있습니다.
+                    </li>
+                </ul>
+                </p>
+            </div>
+        </th:block>
+    </div>
+    <div th:if="${commentCountMap.size() == 0}">
+        <p>새로운 댓글 알림이 없습니다.</p> <!-- 문구 수정 -->
+    </div>
+</div>
+
+</body>
+</html>

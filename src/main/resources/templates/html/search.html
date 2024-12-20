@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 화면</title>
+    <link rel="stylesheet" href="/css/home.css"> <!-- 외부 CSS 파일 링크 -->
+</head>
+<body>
+<div class="header">
+    <img src="/defaultImg/PJ9_사진.png" alt="사이트 소개 이미지" class="intro-image" onclick="reloadPage()">
+</div>
+
+<div class="login" id="login-area">
+    <th:block th:if="${sessionId != null}"> <!-- 로그인 상태 -->
+        <a href="javascript:void(0);" id="myinfo-link"
+           onclick="openSmallWindowNotification('http://localhost:8416/notice')">🔔 알림</a> | |
+        <a href="javascript:void(0);" id="info-link" onclick="openSmallWindowMyInfo('http://localhost:8416/notice')">🔒 내
+            정보</a> | |
+        <a href="http://localhost:8416/logout" id="logout-link">👋 로그아웃</a> | |
+        <a href="http://localhost:8416/create/board" id="create-link">📝 글 작성</a> | |
+        <a href="javascript:void(0);" id="mychat-list" onclick="openSmallWindowChat('http://localhost:8416/chat/list')">📧
+            채팅</a>
+    </th:block>
+    <th:block th:if="${sessionId == null}"> <!-- 비로그인 상태 -->
+        <a href="http://localhost:8416/signin" id="login-link">로그인</a>
+    </th:block>
+</div>
+
+
+<form action="http://localhost:8416/search" method="post">
+    <!-- 검색 바 -->
+    <div class="search-bar">
+        <select id="searchType" name="searchType">
+            <option value="title">제목에 포함</option>
+            <option value="titleAndContent">제목과 내용에 포함</option>
+        </select>
+        <input type="text" id="searchContent" name="searchContent" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+    </div>
+</form>
+
+
+<div class="content">
+    <div class="post-section" id="all-posts">
+        <h3>전체 게시글</h3>
+        <div class="post-list">
+            <th:block th:each="post, iterStat : ${posts}" th:if="${iterStat.index < 20}"> <!-- 최대 20개 게시글 -->
+                <div class="post">
+                    <h4 th:text="${post.title}">게시글 제목</h4>
+                    <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
+                    <div class="dropdown" style="display: none;">
+                        <ul>
+                            <li class="dropdown-item" onclick="searchId()">ID로 검색</li>
+                            <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
+                        </ul>
+                    </div>
+                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
+                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="post-section" id="member-search">
+        <h3>팀원 구함</h3>
+        <div class="post-list">
+            <th:block th:each="post, iterStat : ${posts}" th:if="${post.boardType == 'member_search'}">
+                <!-- 최대 10개 게시글 -->
+                <div class="post">
+                    <h4 th:text="${post.title}">게시글 제목</h4>
+                    <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
+                    <div class="dropdown" style="display: none;">
+                        <ul>
+                            <li class="dropdown-item" onclick="searchId()">ID로 검색</li>
+                            <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
+                        </ul>
+                    </div>
+                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
+                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="post-section" id="team-search">
+        <h3>팀 구함</h3>
+        <div class="post-list">
+            <th:block th:each="post, iterStat : ${posts}" th:if="${post.boardType == 'team_search'}">
+                <!-- 최대 10개 게시글 -->
+                <div class="post">
+                    <h4 th:text="${post.title}">게시글 제목</h4>
+                    <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
+                    <div class="dropdown" style="display: none;">
+                        <ul>
+                            <li class="dropdown-item" onclick="searchId()">ID로 검색</li>
+                            <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
+                        </ul>
+                    </div>
+                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
+                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>
+
+<script>
+    function reloadPage() {
+        location.replace("http://localhost:8416/"); // 페이지 새로고침
+    }
+
+    function openSmallWindow(url) {
+        window.open(url, '_blank', 'width=800,height=400'); // 작은 창 열기
+    }
+
+    function openSmallWindowChat(url) {
+        window.open(url, '_blank', 'width=400,height=800'); // 작은 창 열기
+    }
+
+
+    function openSmallWindowMyInfo(url) {
+        window.open(url, '_blank', 'width=800,height=500'); // 작은 창 열기
+    }
+
+    function openSmallWindowChatContent() {
+        const url = `http://localhost:8416/chat/${event.target.closest('.post').querySelector('.author').textContent}`;
+        window.open(url, '_blank', 'width=550,height=950'); // 작은 창 열기
+    }
+
+    function searchId() {
+        const targetUserId = event.target.closest('.post').querySelector('.author').textContent;
+        console.log("검색할 아이디 : " + targetUserId);
+        location.href = `http://localhost:8416/search/${targetUserId}`;
+    }
+
+    // 작성자를 클릭할 때 드롭다운 메뉴를 토글하는 함수
+    function toggleDropdown(event) {
+        // 작성자 이름 바로 아래에 있는 .dropdown 요소를 찾음
+        const dropdown = event.target.nextElementSibling;
+
+        // 드롭다운 메뉴의 표시 상태를 반전시킴 (보이거나 숨기기)
+        if (dropdown.style.display === "none" || dropdown.style.display === "") {
+            dropdown.style.display = "block";
+        } else {
+            dropdown.style.display = "none";
+        }
+    }
+
+</script>
+</body>
+</html>

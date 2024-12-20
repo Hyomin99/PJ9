@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림</title>
+    <link rel="stylesheet" href="/css/notifications.css"> <!-- 필요시 CSS 파일 링크 -->
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .notification {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .notification a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .notification a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<!-- 게시글 알림 -->
+<div class="notifications">
+    <h4>작성 게시글</h4>
+    <!-- 게시글이 있는 경우 -->
+    <div th:if="${posts.size() > 0}">
+        <ul>
+            <li th:each="post : ${posts}">
+                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}" target="_blank"
+                   th:text="${post.title}">게시글 제목</a> | |
+                <span th:text="${post.createdAt}">작성 시간</span>
+            </li>
+        </ul>
+    </div>
+    <!-- 게시글이 없는 경우 -->
+    <div th:if="${posts.size() == 0}">
+        <p>작성한 게시글이 없습니다.</p>
+    </div>
+</div>
+
+
+<!-- 댓글 알림 -->
+<div class="notifications">
+    <h4>작성 댓글</h4>
+    <!-- 작성 댓글이 있는 경우 -->
+    <div th:if="${comments.size() > 0}">
+        <ul>
+            <li th:each="comment : ${comments}">
+                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${comment.postNum.postNum})}" target="_blank"
+                   th:text="${comment.content}">댓글 내용</a> | |
+                <span th:text="${comment.createdAt}">작성 시간</span>
+            </li>
+        </ul>
+    </div>
+    <!-- 작성 댓글이 없는 경우 -->
+    <div th:if="${comments.size() == 0}">
+        <p>작성한 댓글이 없습니다.</p>
+    </div>
+</div>
+
+<!-- 대댓글 알림 -->
+<div class="notifications">
+    <h4>작성 대댓글</h4>
+    <!-- 작성한 대댓글이 있는 경우 -->
+    <div th:if="${replies.size() > 0}">
+        <ul>
+            <li th:each="reply : ${replies}">
+                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${reply.postNum.postNum})}" target="_blank"
+                   th:text="${reply.content}">대댓글 내용</a> | |
+                <span th:text="${reply.createdAt}">작성 시간</span>
+            </li>
+        </ul>
+    </div>
+    <!-- 작성한 대댓글이 없는 경우 -->
+    <div th:if="${replies.size() == 0}">
+        <p>작성한 대댓글이 없습니다.</p>
+    </div>
+</div>
+
+
+
+</body>
+</html>

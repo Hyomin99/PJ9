@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 애플리케이션</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #chat {
+            width: 500px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        #messages {
+            height: 700px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        #messageInput {
+            width: calc(100% - 70px);
+            height: 50px; /* 높이를 50px로 늘림 */
+            font-size: 16px; /* 글씨 크기를 키움 */
+            padding: 10px; /* 안쪽 여백 추가 */
+            box-sizing: border-box; /* 패딩 포함한 전체 크기 유지 */
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .message.left {
+            justify-content: flex-start;
+        }
+
+        .message.right {
+            justify-content: flex-end;
+        }
+
+        .message p {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .message.left p {
+            background-color: #f1f1f1;
+            text-align: left;
+        }
+
+        .message.right p {
+            background-color: #dcf8c6;
+            text-align: right;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+<div id="chat">
+    <h1 th:text="${toUserId}"></h1>
+    <input type="hidden" id="userId" th:value="${userId}">
+    <input type="hidden" id="toUserId" th:value="${toUserId}">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="메시지 입력">
+    <button id="sendButton">전송</button>
+</div>
+
+<script>
+    let lastMessageDate = null; // 마지막 메시지 날짜 추적
+
+    fetch('http://localhost:8416/get/chat/' + document.getElementById("toUserId").value)
+        .then(response => response.json())
+        .then(data => {
+            const otherChat = data.otherChat || []; // 상대방 채팅 기록
+            const myChat = data.myChat || []; // 내 채팅 기록
+
+            const chatList = [...otherChat, ...myChat];
+
+            // transferTime을 사용자 정의 형식으로 변환
+            chatList.sort((a, b) => {
+                const parseTime = (time) => {
+                    const parts = time.split('-');
+                    return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4]);
+                };
+
+                const dateA = parseTime(a.transferTime);
+                const dateB = parseTime(b.transferTime);
+                return dateA - dateB; // 시간순 정렬
+            });
+
+            // 정렬된 메시지를 화면에 추가
+            chatList.forEach(chat => {
+                const parseTime = (time) => {
+                    const parts = time.split('-');
+                    return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4]);
+                };
+
+                const date = parseTime(chat.transferTime);
+                const formattedDate = date.toLocaleDateString(); // 날짜 형식 변환
+                const isSameDay = lastMessageDate === formattedDate;
+
+                if (!isSameDay) {
+                    addDateSeparator(formattedDate); // 날짜 구분선 추가
+                    lastMessageDate = formattedDate; // 마지막 메시지 날짜 업데이트
+                }
+
+                const formattedMessage = `${chat.fromUserId} : ${chat.text} (${date.toTimeString().slice(0,5)})`;
+                addMessage(formattedMessage, chat.fromUserId === document.getElementById("userId").value);
+            });
+        })
+        .catch(error => console.error('Error fetching chat list:', error));
+
+    function addDateSeparator(date) {
+        var messagesDiv = document.getElementById("messages");
+        var separatorElement = document.createElement("div");
+        separatorElement.classList.add("date-separator");
+        separatorElement.innerText = date; // 날짜 텍스트 추가
+        messagesDiv.appendChild(separatorElement);
+    }
+
+    var stompClient = null;
+    function connect() {
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        var userId = document.getElementById("userId").value;
+        console.log("연결될 때 userID: " + userId);
+
+        stompClient.connect({'userId': userId}, function (frame) {
+            console.log('Connected: ' + frame);
+            var destination = '/queue/messages/' + userId;
+            console.log('구독 경로: ' + destination);
+            stompClient.subscribe(destination, function (message) {
+                var messagesDiv = document.getElementById("messages");
+                var messageObj = JSON.parse(message.body); // 메시지를 JSON 객체로 파싱
+                var date = new Date(); // 현재 날짜
+                const formattedDate = date.toLocaleDateString(); // 현재 날짜 형식 변환
+                const isSameDay = lastMessageDate === formattedDate;
+
+                if (!isSameDay) {
+                    addDateSeparator(formattedDate);
+                    lastMessageDate = formattedDate;
+                }
+
+                var formattedMessage = messageObj.fromUserId + " : " + messageObj.text + " (" + date.getHours()+":"+date.getMinutes() + ")";
+                addMessage(formattedMessage, false); // 상대방 메시지 추가
+            });
+        }, function (error) {
+            console.error('STOMP 연결 에러: ' + error);
+        });
+    }
+
+    function sendMessage() {
+        var fromUserId = document.getElementById("userId").value;
+        var toUserId = document.getElementById("toUserId").value;
+        var message = document.getElementById("messageInput").value;
+        let today = new Date();
+        const year = today.getFullYear(); // 현재 년도
+        const month = today.getMonth() + 1; // 현재 월 (0부터 시작하므로 +1)
+        const date = today.getDate(); // 현재 날짜
+        const hours = today.getHours(); // 현재 시간
+        const minutes = today.getMinutes(); // 현재 분
+        const now = year + "-" + month + "-" + date + "-" + hours + "-" + minutes
+        var nowMessage = message +" (" +hours +":" +minutes + ")";
+        var payload = {
+            fromUserId: fromUserId,
+            toUserId: toUserId,
+            text: message,
+            transferTime: now
+        }; // 메시지를 JSON 객체로 감싸기
+
+        stompClient.send("/chat/message/" + toUserId, {}, JSON.stringify(payload)); // JSON 문자열로 전송
+        addMessage(nowMessage, true); // 내 메시지 추가
+        document.getElementById("messageInput").value = ""; // 메시지 입력창 초기화
+    }
+
+    function addMessage(nowMessage, isOwnMessage) {
+        var messagesDiv = document.getElementById("messages");
+        var messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.classList.add(isOwnMessage ? "right" : "left");
+        messageElement.innerHTML = "<p>" + nowMessage + "</p>";
+        messagesDiv.appendChild(messageElement);
+        scrollToBottom(); // 메시지가 추가될 때마다 스크롤을 아래로 이동
+    }
+
+    function scrollToBottom() {
+        var messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    document.getElementById("sendButton").addEventListener("click", sendMessage);
+
+    // Enter 키를 눌렀을 때 메시지 전송
+    document.getElementById("messageInput").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") { // Enter 키인지 확인
+            event.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 등)
+            sendMessage(); // 메시지 전송
+        }
+    });
+
+    // 페이지가 로드되면 자동으로 연결
+    window.onload = connect;
+</script>
+</body>
+</html>
