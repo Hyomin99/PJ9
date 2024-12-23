@@ -5,10 +5,18 @@ body {
 }
 
 .header {
+    display: flex; /* 플렉스 박스 사용 */
+    justify-content: space-between; /* 양쪽 끝으로 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
     width: 100%; /* 헤더의 너비를 100%로 설정 */
     max-width: 1200px; /* 최대 너비 설정 */
     margin: 0 auto; /* 중앙 정렬 */
-    overflow: hidden; /* 내용이 넘칠 경우 숨김 */
+    padding: 10px 0; /* 위아래 패딩 추가 */
+}
+
+.search-bar {
+    display: flex; /* 플렉스 박스 사용 */
+    align-items: center; /* 수직 중앙 정렬 */
 }
 
 .content {
@@ -29,7 +37,7 @@ body {
 
 .login {
     text-align: right;
-    margin: 10px;
+    margin-left: 20px; /* 검색 바와의 간격 조정 */
 }
 
 .post-section {
