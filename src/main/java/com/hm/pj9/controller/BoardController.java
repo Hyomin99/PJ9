@@ -32,8 +32,9 @@ public class BoardController {
 
 
     @GetMapping("create/board")
-    public String createBoard() {
-        return "createBoard";
+    public String createBoard(HttpSession session) {
+        String targetUrl =  "createBoard";
+        return checkSession(session,targetUrl);
     }
 
     @PostMapping("save/board")
@@ -48,7 +49,8 @@ public class BoardController {
         }
 
 
-        return "redirect:" + webUrl;
+        String targetUrl = "redirect:/";
+        return checkSession(session,targetUrl);
 
     }
 
@@ -69,59 +71,67 @@ public class BoardController {
 
         model.addAttribute("userId", (String) session.getAttribute("userId"));
         model.addAttribute("webUrl", webUrl);
-        return "boardPage";
+        String targetUrl = "boardPage";
+        return checkSession(session,targetUrl);
     }
 
     @GetMapping("check/notification/{post_num}")
     public String checkNotification(Model model, @PathVariable Integer post_num, HttpSession session, @RequestParam String type) { //알림 확인
         userService.readNotification(post_num, (String) session.getAttribute("userId"), type);
-        return "redirect:" + webUrl + "/board/" + post_num;
+        String targetUrl = "redirect:/board/" + post_num;
+        return checkSession(session,targetUrl);
     }
 
 
     @PostMapping("add/comment")
     public String addComment(@ModelAttribute Comment comment, HttpSession session, @RequestParam("postNum") Integer postNum) throws IOException { //댓글 저장
         boardService.saveComment(comment, (String) session.getAttribute("userId"), postNum);
-        return "redirect:" + webUrl + "/board/" + postNum;
+        String targetUrl = "redirect:/board/" + postNum;
+        return checkSession(session,targetUrl);
     }
 
     @GetMapping("comment/delete")
-    public String deleteComment(@RequestParam Integer commentNum, @RequestParam Integer postNum) {
+    public String deleteComment(@RequestParam Integer commentNum, @RequestParam Integer postNum, HttpSession session) {
         System.out.println("여기까지는 오는건가");
         boardService.deleteComment(commentNum);
-        return "redirect:" + webUrl + "/board/" + postNum;
+        String targetUrl = "redirect:/board/" + postNum;
+        return checkSession(session,targetUrl);
     }
 
     @GetMapping("reply/delete")
-    public String deleteReply(@RequestParam Integer replyNum, @RequestParam Integer postNum) {
+    public String deleteReply(@RequestParam Integer replyNum, @RequestParam Integer postNum, HttpSession session) {
         System.out.println("여기까지는 오는건가");
         boardService.deleteReply(replyNum);
-        return "redirect:" + webUrl + "/board/" + postNum;
+        String targetUrl = "redirect:/board/" + postNum;
+        return checkSession(session,targetUrl);
     }
 
     @PostMapping("add/reply")
     public String addReply(@ModelAttribute Reply reply, HttpSession session, @RequestParam("postNum") Integer postNum, @RequestParam("commentNum") Integer commentNum) { //댓글 저장
         boardService.saveReply(reply, (String) session.getAttribute("userId"), postNum, commentNum);
-        return "redirect:" + webUrl + "/board/" + postNum;
+        String targetUrl = "redirect:/board/" + postNum;
+        return checkSession(session,targetUrl);
     }
 
     @GetMapping("post/delete/{postNum}")
-    public String deletePost(@PathVariable Integer postNum) {
+    public String deletePost(@PathVariable Integer postNum, HttpSession session) {
         boardService.deletePost(postNum);
-        return "redirect:" + webUrl;
+        String targetUrl = "redirect:/";
+        return checkSession(session,targetUrl);
     }
 
     @GetMapping("post/edit/{postNum}")
-    public String editPost1(@PathVariable Integer postNum, Model model) {
+    public String editPost1(@PathVariable Integer postNum, Model model, HttpSession session) {
         Post post = boardService.getPost(postNum);
         model.addAttribute("post", post);
         model.addAttribute("webUrl", webUrl);
-        return "editBoard";
+        String targetUrl = "editBoard";
+        return checkSession(session,targetUrl);
     }
 
 
     @PostMapping("update/post")
-    public String editPost2(@ModelAttribute Post post, @RequestParam("images") MultipartFile[] images) throws IOException { //게시글 저장
+    public String editPost2(@ModelAttribute Post post, @RequestParam("images") MultipartFile[] images, HttpSession session) throws IOException { //게시글 저장
 
 
         try {
@@ -130,10 +140,22 @@ public class BoardController {
             return "저장 중 오류가 발생 : " + e.getMessage();
         }
 
-        return "redirect:" + webUrl + "/board/" + post.getPostNum();
-
+        String targetUrl = "redirect:/board/" + post.getPostNum();
+        return checkSession(session,targetUrl);
 
     }
 
+    public String checkSession(HttpSession session, String targetUrl) {
+        // 세션에서 userId를 확인
+        Object userId = session.getAttribute("userId");
+
+        // userId가 없으면 /login 페이지로 리디렉션
+        if (userId == null) {
+            return "redirect:/signin";
+        }
+
+        // userId가 있으면 해당 페이지로 진행
+        return targetUrl;
+    }
 
 }

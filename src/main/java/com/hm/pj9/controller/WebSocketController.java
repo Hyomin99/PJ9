@@ -82,14 +82,26 @@ public class WebSocketController {
     }
 
 
-
-
-
     @GetMapping("chat/{toUserId}")
     public String chat(HttpSession session, Model model, @PathVariable String toUserId){ //채팅 페이지로 전환
+
         model.addAttribute("userId", (String)session.getAttribute("userId"));
         model.addAttribute("toUserId", toUserId);
         model.addAttribute("webUrl", webUrl);
-        return "chat";
+        String targetUrl =  "chat";
+        return checkSession(session, targetUrl);
+    }
+
+    public String checkSession(HttpSession session, String targetUrl) {
+        // 세션에서 userId를 확인
+        Object userId = session.getAttribute("userId");
+
+        // userId가 없으면 /login 페이지로 리디렉션
+        if (userId == null) {
+            return "redirect:/signin";
+        }
+
+        // userId가 있으면 해당 페이지로 진행
+        return targetUrl;
     }
 }

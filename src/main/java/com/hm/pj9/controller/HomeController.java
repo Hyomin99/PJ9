@@ -37,14 +37,14 @@ public class HomeController {
         model.addAttribute("posts", posts);
         model.addAttribute("sessionId", sessionId);
         model.addAttribute("webUrl", webUrl);
-        return "home";
+        return  "home";
     }
 
     @GetMapping("signin")
-    public String signIn(Model model) { //로그인 페이지
+    public String signIn(Model model , HttpSession session) { //로그인 페이지
         System.out.println("로그인으로 이동");
         model.addAttribute("webUrl", webUrl);
-        return "signin";
+        return  "signin";
     }
 
 
@@ -52,14 +52,12 @@ public class HomeController {
     public String signInCheck(@RequestParam String userId, @RequestParam String userPw, HttpSession session,
                               @RequestParam(required = false) String remember, RedirectAttributes redirectAttributes) { //로그인 누를 시 아이디 비번 확인
         int result = userService.signInCheck(userId, userPw);
-
         if (result == 1) {
             session.setAttribute("userId", userId);
-            return "redirect:" +webUrl ;
+              return  "redirect:/";
         } else {
-            return "redirect:"+webUrl+"/signin";
+              return  "redirect:/signin";
         }
-
     }
 
     @GetMapping("signup")
@@ -73,7 +71,7 @@ public class HomeController {
         System.out.println("비밀번호 " + userPw1);
         userService.createAccount(userId, userPw1);
 
-        return "redirect:" +webUrl;
+        return  "redirect:/";
     }
 
     @PostMapping("signup/duplication/check")
@@ -88,7 +86,7 @@ public class HomeController {
     @GetMapping("logout")
     public String logOut(HttpSession session) { //로그아웃
         session.invalidate(); // 세션 무효화
-        return "redirect:" +webUrl;
+        return   "redirect:/" ;
     }
 
     @GetMapping("/notice")
@@ -98,7 +96,8 @@ public class HomeController {
         model.addAttribute("postCountMap", notificationResult.getPostCountMap());
         model.addAttribute("commentCountMap", notificationResult.getcommentCountMap());
         model.addAttribute("webUrl", webUrl);
-        return "notification";
+        String targetUrl = "notification";
+        return checkSession(session,targetUrl);
     }
 
     @PostMapping("search")
@@ -115,35 +114,51 @@ public class HomeController {
             model.addAttribute("webUrl", webUrl);
         }
         return "search";
+
     }
 
     @GetMapping("search/{targetUserId}")
-    public String searchId(Model model, HttpSession session, @PathVariable String targetUserId) { //검색 결과 반환
+    public String searchId(Model model, HttpSession session, @PathVariable String targetUserId) { //아이디로 검색 결과 반환
         model.addAttribute("sessionId", (String) session.getAttribute("userId"));
         model.addAttribute("posts", boardService.getPostById(targetUserId));
         model.addAttribute("webUrl", webUrl);
-        return "search";
+        return  "search";
 
     }
 
     @GetMapping("my/info")
-    public String myInfo(Model model, HttpSession session){
+    public String myInfo(Model model, HttpSession session){ //내정보
         String userId = (String)session.getAttribute("userId");
         Map<String,List<?>> userInfo = userService.getUserInfo(userId);
         model.addAttribute("posts", userInfo.get("posts"));
         model.addAttribute("comments", userInfo.get("comments"));
         model.addAttribute("replies", userInfo.get("replies"));
         model.addAttribute("webUrl", webUrl);
-        return "myInfo";
+        String targetUrl = "myInfo";
+        return checkSession(session,targetUrl);
     }
 
 
     @GetMapping("delete/user")
-    public String deleteUser(HttpSession session){
+    public String deleteUser(HttpSession session){ //계정 탈퇴
         String userId = (String) session.getAttribute("userId");
         userService.deleteUser(userId);
         session.invalidate(); // 세션 무효화
-        return "redirect:" + webUrl;
+        return "redirect:/";
+
+    }
+
+    public String checkSession(HttpSession session, String targetUrl) {
+        // 세션에서 userId를 확인
+        Object userId = session.getAttribute("userId");
+
+        // userId가 없으면 /login 페이지로 리디렉션
+        if (userId == null) {
+            return "redirect:/signin";
+        }
+
+        // userId가 있으면 해당 페이지로 진행
+        return targetUrl;
     }
 
 
