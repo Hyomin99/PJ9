@@ -83,8 +83,9 @@
 
 <script>
     let lastMessageDate = null; // 마지막 메시지 날짜 추적
+    const baseUrl = window.location.origin;
 
-    fetch('http://localhost:8416/get/chat/' + document.getElementById("toUserId").value)
+    fetch(`${baseUrl}/get/chat/` + document.getElementById("toUserId").value)
         .then(response => response.json())
         .then(data => {
             const otherChat = data.otherChat || []; // 상대방 채팅 기록

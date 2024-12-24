@@ -46,8 +46,8 @@
 </table>
 
 <script>
-
-    fetch('http://localhost:8416/get/chat/list')
+    const baseUrl = window.location.origin; // 현재 도메인 (e.g., https://hm.com)
+    fetch(`${baseUrl}/get/chat/list`)
         .then(response => response.json())
         .then(chatList => {
             const tbody = document.getElementById('chatTableBody');
@@ -76,13 +76,12 @@
         if (row) {
             const toUserId = row.cells[0].textContent; // 상대방 ID
 
-            // window.location.href = `http://localhost:8416/chat/${encodeURIComponent(toUserId)}`;
             openSmallWindowChatContent(toUserId)
         }
     }
 
     function openSmallWindowChatContent(toUserId) {
-        const url = `http://localhost:8416/chat/${encodeURIComponent(toUserId)}`; // 템플릿 리터럴 사용
+        const url = `${baseUrl}/chat/${encodeURIComponent(toUserId)}`; // 템플릿 리터럴 사용
         window.open(url, '_blank', 'width=550,height=950'); // 작은 창 열기
     }
 

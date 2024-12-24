@@ -3,6 +3,7 @@ package com.hm.pj9.controller;
 import com.hm.pj9.model.ChatMessage;
 import com.hm.pj9.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,6 +25,9 @@ import java.util.Map;
 
 @Controller
 public class WebSocketController {
+
+    @Value("${default.web.url}")
+    private String webUrl;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -85,6 +89,7 @@ public class WebSocketController {
     public String chat(HttpSession session, Model model, @PathVariable String toUserId){ //채팅 페이지로 전환
         model.addAttribute("userId", (String)session.getAttribute("userId"));
         model.addAttribute("toUserId", toUserId);
+        model.addAttribute("webUrl", webUrl);
         return "chat";
     }
 }

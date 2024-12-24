@@ -36,7 +36,7 @@
                 <p>
                 <ul>
                     <li th:each="innerEntry : ${postNotice.value}">
-                        <a th:href="@{http://localhost:8416/check/notification/{postNum}(postNum=${postNotice.key} , type='post_notice')}" target="_parent"
+                        <a th:href="@{/check/notification/{postNum}(postNum=${postNotice.key} , type='post_notice')}" target="_parent"
                            th:text="${innerEntry.key}">게시글 제목</a> 게시물에 해당하는
                         <span th:text="${innerEntry.value}">알림 수</span>개의 댓글 알림이 있습니다.
                     </li>
@@ -59,7 +59,7 @@
                 <p>
                 <ul>
                     <li th:each="innerEntry : ${commentNotice.value}">
-                        <a th:href="@{http://localhost:8416/check/notification/{postNum}(postNum=${commentNotice.key} , type='comment_notice')}" target="_parent"
+                        <a th:href="@{/check/notification/{postNum}(postNum=${commentNotice.key} , type='comment_notice')}" target="_parent"
                            th:text="${innerEntry.key}">게시글 제목</a> 게시글에 작성하신 회원님의 댓글에
                         <span th:text="${innerEntry.value}">알림 수</span>개의 알림이 있습니다.
                     </li>

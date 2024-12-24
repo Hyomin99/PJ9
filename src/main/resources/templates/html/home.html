@@ -9,26 +9,7 @@
 <body>
 <div class="header">
     <img src="/defaultImg/PJ9_사진.png" alt="사이트 소개 이미지" class="intro-image" onclick="reloadPage()">
-    <div class="login" id="login-area">
-        <th:block th:if="${sessionId != null}"> <!-- 로그인 상태 -->
-            <a href="javascript:void(0);" id="myinfo-link"
-               onclick="openSmallWindowNotification('http://localhost:8416/notice')">🔔 알림</a> | |
-            <a href="javascript:void(0);" id="info-link" onclick="openSmallWindowMyInfo('http://localhost:8416/my/info')">🔒 내
-                정보</a> | |
-            <a href="http://localhost:8416/logout" id="logout-link">👋 로그아웃</a> | |
-            <a href="http://localhost:8416/create/board" id="create-link">📝 글 작성</a> | |
-            <a href="javascript:void(0);" id="mychat-list" onclick="openSmallWindowChat('http://localhost:8416/chat/list')">📧
-                채팅</a>
-
-            <a href="http://localhost:8416/delete/user"  onclick="return confirm('계정 탈퇴 하시겠습니까?');">💀 계정 탈퇴</a>
-        </th:block>
-        <th:block th:if="${sessionId == null}"> <!-- 비로그인 상태 -->
-            <a href="http://localhost:8416/signin" id="login-link">✋ 로그인</a>
-        </th:block>
-    </div>
-
-
-    <form action="http://localhost:8416/search" method="post">
+    <form th:action="@{/search}" method="post">
         <!-- 검색 바 -->
         <div class="search-bar">
             <select id="searchType" name="searchType">
@@ -39,7 +20,23 @@
             <button type="submit">검색</button>
         </div>
     </form>
+    <div class="login" id="login-area">
+        <th:block th:if="${sessionId != null}"> <!-- 로그인 상태 -->
+            <a href="javascript:void(0);" id="myinfo-link"
+               onclick="openSmallWindowNotification('/notice')">🔔 알림</a> | |
+            <a href="javascript:void(0);" id="info-link" onclick="openSmallWindowMyInfo('/my/info')">🔒 내
+                정보</a> | |
+            <a th:href="@{/logout}" id="logout-link">👋 로그아웃</a> | |
+            <a th:href="@{/create/board}" id="create-link">📝 글 작성</a> | |
+            <a href="javascript:void(0);" id="mychat-list" onclick="openSmallWindowChat('/chat/list')">📧
+                채팅</a> | |
 
+            <a th:href="@{/delete/user}" onclick="return confirm('계정 탈퇴 하시겠습니까?');">💀 계정 탈퇴</a>
+        </th:block>
+        <th:block th:if="${sessionId == null}"> <!-- 비로그인 상태 -->
+            <a th:href="@{/signin}" id="login-link">✋ 로그인</a>
+        </th:block>
+    </div>
 </div>
 
 <div class="content">
@@ -57,7 +54,7 @@
                         </ul>
                     </div>
                     <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
                 </div>
             </th:block>
         </div>
@@ -78,7 +75,7 @@
                         </ul>
                     </div>
                     <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
                 </div>
             </th:block>
         </div>
@@ -99,38 +96,39 @@
                         </ul>
                     </div>
                     <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
                 </div>
             </th:block>
         </div>
     </div>
 </div>
 <script>
+    const baseUrl = window.location.origin; // 현재 도메인 (e.g., https://hm.com)
     function reloadPage() {
         location.reload(); // 페이지 새로고침
     }
 
     function openSmallWindowNotification(url) {
-        window.open(url, '_blank', 'width=800,height=400'); // 작은 창 열기
+        window.open(baseUrl + url, '_blank', 'width=800,height=400'); // 작은 창 열기
     }
 
     function openSmallWindowChat(url) {
-        window.open(url, '_blank', 'width=400,height=800'); // 작은 창 열기
+        window.open(baseUrl + url, '_blank', 'width=400,height=800'); // 작은 창 열기
     }
 
     function openSmallWindowMyInfo(url) {
-        window.open(url, '_blank', 'width=800,height=500'); // 작은 창 열기
+        window.open(baseUrl + url, '_blank', 'width=800,height=500'); // 작은 창 열기
     }
 
     function openSmallWindowChatContent() {
-        const url = `http://localhost:8416/chat/${event.target.closest('.post').querySelector('.author').textContent}`;
+        const url = baseUrl + `/chat/${event.target.closest('.post').querySelector('.author').textContent}`;
         window.open(url, '_blank', 'width=550,height=950'); // 작은 창 열기
     }
 
     function searchId() {
         const targetUserId = event.target.closest('.post').querySelector('.author').textContent;
         console.log("검색할 아이디 : " + targetUserId);
-        location.href = `http://localhost:8416/search/${targetUserId}`;
+        location.href = baseUrl + `/search/${targetUserId}`;
     }
 
 

@@ -16,7 +16,7 @@
 <body>
 
 <h1>게시글 수정</h1>
-<form action="http://localhost:8416/update/post" method="post" enctype="multipart/form-data">
+<form th:action="@{/update/post}" method="post" enctype="multipart/form-data">
     <!-- 게시글 번호(hidden으로 유지) -->
     <input type="hidden" id="postNum" name="postNum" th:value="${post.postNum}" required>
 

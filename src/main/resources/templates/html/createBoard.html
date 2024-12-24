@@ -16,7 +16,7 @@
 <body>
 
 <h1>게시판 작성</h1>
-<form action="http://localhost:8416/save/board" method="post" enctype="multipart/form-data">
+<form th:action="@{/save/board}" method="post" enctype="multipart/form-data">
     <label for="title">제목:</label>
     <input type="text" id="title" name="title" required>
 

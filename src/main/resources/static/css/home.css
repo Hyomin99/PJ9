@@ -8,16 +8,28 @@ body {
     display: flex; /* 플렉스 박스 사용 */
     justify-content: space-between; /* 양쪽 끝으로 정렬 */
     align-items: center; /* 수직 중앙 정렬 */
+    flex-wrap: wrap; /* 요소가 넘칠 경우 줄바꿈 */
     width: 100%; /* 헤더의 너비를 100%로 설정 */
     max-width: 1200px; /* 최대 너비 설정 */
     margin: 0 auto; /* 중앙 정렬 */
-    padding: 10px 0; /* 위아래 패딩 추가 */
+    padding: 10px 20px; /* 위아래 패딩 추가 */
+}
+
+.login {
+    display: flex;
+    gap: 10px; /* 링크 간 간격 추가 */
+    align-items: center;
+    margin-left: auto; /* 오른쪽으로 이동 */
+    flex-wrap: wrap;
 }
 
 .search-bar {
-    display: flex; /* 플렉스 박스 사용 */
-    align-items: center; /* 수직 중앙 정렬 */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 요소 간 간격 추가 */
+    margin-top: 10px;
 }
+
 
 .content {
     display: flex;
@@ -35,10 +47,7 @@ body {
     cursor: pointer;
 }
 
-.login {
-    text-align: right;
-    margin-left: 20px; /* 검색 바와의 간격 조정 */
-}
+
 
 .post-section {
     width: 30%;

@@ -36,6 +36,8 @@ public class BoardService {
     @Value("${file.upload-dir}")
     private String uploadDir = "resources/static/img"; // 파일을 저장할 디렉토리 경로
 
+
+
     public Post saveBoard(Post post, String author) { // 게시글 저장
         User user = userRepository.findById(author).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         post.setAuthor(user);

@@ -34,7 +34,7 @@
     <div th:if="${posts.size() > 0}">
         <ul>
             <li th:each="post : ${posts}">
-                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${post.postNum})}" target="_blank"
+                <a th:href="@{/board/{postNum}(postNum=${post.postNum})}" target="_blank"
                    th:text="${post.title}">게시글 제목</a> | |
                 <span th:text="${post.createdAt}">작성 시간</span>
             </li>
@@ -54,7 +54,7 @@
     <div th:if="${comments.size() > 0}">
         <ul>
             <li th:each="comment : ${comments}">
-                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${comment.postNum.postNum})}" target="_blank"
+                <a th:href="@{/board/{postNum}(postNum=${comment.postNum.postNum})}" target="_blank"
                    th:text="${comment.content}">댓글 내용</a> | |
                 <span th:text="${comment.createdAt}">작성 시간</span>
             </li>
@@ -73,7 +73,7 @@
     <div th:if="${replies.size() > 0}">
         <ul>
             <li th:each="reply : ${replies}">
-                <a th:href="@{http://localhost:8416/board/{postNum}(postNum=${reply.postNum.postNum})}" target="_blank"
+                <a th:href="@{/board/{postNum}(postNum=${reply.postNum.postNum})}" target="_blank"
                    th:text="${reply.content}">대댓글 내용</a> | |
                 <span th:text="${reply.createdAt}">작성 시간</span>
             </li>

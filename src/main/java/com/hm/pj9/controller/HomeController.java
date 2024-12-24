@@ -6,6 +6,7 @@ import com.hm.pj9.service.BoardService;
 import com.hm.pj9.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,10 @@ import java.util.Map;
 @Controller // 뷰를 반환한다고 선언
 public class HomeController {
 
+
+    @Value("${default.web.url}")
+    private String webUrl;
+
     @Autowired
     private UserService userService;
 
@@ -31,13 +36,14 @@ public class HomeController {
         String sessionId = (String) session.getAttribute("userId");
         model.addAttribute("posts", posts);
         model.addAttribute("sessionId", sessionId);
+        model.addAttribute("webUrl", webUrl);
         return "home";
     }
 
     @GetMapping("signin")
-    public String signIn() { //로그인 페이지
+    public String signIn(Model model) { //로그인 페이지
         System.out.println("로그인으로 이동");
-
+        model.addAttribute("webUrl", webUrl);
         return "signin";
     }
 
@@ -49,9 +55,9 @@ public class HomeController {
 
         if (result == 1) {
             session.setAttribute("userId", userId);
-            return "redirect:http://localhost:8416/";
+            return "redirect:" +webUrl ;
         } else {
-            return "redirect:http://localhost:8416/signin";
+            return "redirect:"+webUrl+"/signin";
         }
 
     }
@@ -67,7 +73,7 @@ public class HomeController {
         System.out.println("비밀번호 " + userPw1);
         userService.createAccount(userId, userPw1);
 
-        return "redirect:http://localhost:8416/";
+        return "redirect:" +webUrl;
     }
 
     @PostMapping("signup/duplication/check")
@@ -82,7 +88,7 @@ public class HomeController {
     @GetMapping("logout")
     public String logOut(HttpSession session) { //로그아웃
         session.invalidate(); // 세션 무효화
-        return "redirect:http://localhost:8416/";
+        return "redirect:" +webUrl;
     }
 
     @GetMapping("/notice")
@@ -91,7 +97,7 @@ public class HomeController {
         model.addAttribute("notification", notificationResult.getNotifications());
         model.addAttribute("postCountMap", notificationResult.getPostCountMap());
         model.addAttribute("commentCountMap", notificationResult.getcommentCountMap());
-
+        model.addAttribute("webUrl", webUrl);
         return "notification";
     }
 
@@ -103,8 +109,10 @@ public class HomeController {
 
         if (data.getSearchType().equals("title")) { //제목만으로 검색 데이터
             model.addAttribute("posts", boardService.getPostByTitle(data.getSearchContent()));
+            model.addAttribute("webUrl", webUrl);
         } else { //내용과 제목 둘중 하나로 검색 데이터
             model.addAttribute("posts", boardService.getPostByTitleOrContent(data.getSearchContent()));
+            model.addAttribute("webUrl", webUrl);
         }
         return "search";
     }
@@ -113,6 +121,7 @@ public class HomeController {
     public String searchId(Model model, HttpSession session, @PathVariable String targetUserId) { //검색 결과 반환
         model.addAttribute("sessionId", (String) session.getAttribute("userId"));
         model.addAttribute("posts", boardService.getPostById(targetUserId));
+        model.addAttribute("webUrl", webUrl);
         return "search";
 
     }
@@ -124,6 +133,7 @@ public class HomeController {
         model.addAttribute("posts", userInfo.get("posts"));
         model.addAttribute("comments", userInfo.get("comments"));
         model.addAttribute("replies", userInfo.get("replies"));
+        model.addAttribute("webUrl", webUrl);
         return "myInfo";
     }
 
@@ -133,7 +143,7 @@ public class HomeController {
         String userId = (String) session.getAttribute("userId");
         userService.deleteUser(userId);
         session.invalidate(); // 세션 무효화
-        return "redirect:http://localhost:8416/";
+        return "redirect:" + webUrl;
     }
 
 

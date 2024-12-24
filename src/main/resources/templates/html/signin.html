@@ -31,9 +31,9 @@
 <body>
 <div class="login-wrapper">
     <div class="cover-rep">
-        <a target="_self" href="http://localhost:8416/">P J 9</a>
+        <a target="_self" th:href="@{/}">P J 9</a>
     </div>
-    <form method="post" action="http://localhost:8416/signin/check" id="login-form" onsubmit="validateForm(event)">
+    <form method="post" th:action="@{/signin/check}" id="login-form" onsubmit="validateForm(event)">
         <input type="text" id="userId" name="userId" placeholder="아이디">
         <input type="password" id="userPw" name="userPw" placeholder="비밀번호">
         <label for="remember-check">
@@ -44,7 +44,7 @@
     <div class="link-wrapper">
         <a target="_blank" href="회원가입 주소">아이디 찾기</a> |
         <a target="_blank" href="회원가입 주소">비밀번호 찾기</a> |
-        <a target="_self" href="http://localhost:8416/signup">회원가입</a>
+        <a target="_self" th:href="@{/signup}">회원가입</a>
     </div>
 </div>
 </body>
