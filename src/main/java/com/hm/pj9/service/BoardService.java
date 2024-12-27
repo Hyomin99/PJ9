@@ -34,8 +34,7 @@ public class BoardService {
     private NotificationRepository notificationRepository;
 
     @Value("${file.upload-dir}")
-    private String uploadDir = "resources/static/img"; // 파일을 저장할 디렉토리 경로
-
+    private String uploadDir; // 파일을 저장할 디렉토리 경로
 
 
     public Post saveBoard(Post post, String author) { // 게시글 저장
@@ -104,9 +103,16 @@ public class BoardService {
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 String fileName = file.getOriginalFilename(); // 원래 파일 이름
+                System.out.println("파일 이름 : " + fileName);
                 File destinationFile = new File(uploadDir + File.separator + fileName);
-                file.transferTo(destinationFile); // 파일 저장
+                System.out.println("저장할 파일 이름 : " + destinationFile.getName());
 
+                try {
+                    file.transferTo(destinationFile);
+                    System.out.println("저장 성공!");
+                } catch (IOException e) {
+                    System.out.println("저장 중 오류 발생: " + e.getMessage());
+                }
 
                 PostImage postImage = new PostImage();
                 postImage.setPost(post); // 게시글 번호 설정
@@ -157,7 +163,7 @@ public class BoardService {
     }
 
     public List<Post> getPostByTitleOrContent(String content) { // 제목 또는 내용으로 검색
-        return boardRepository.findByTitleContainingOrContentContaining(content,content);
+        return boardRepository.findByTitleContainingOrContentContaining(content, content);
     }
 
 
@@ -167,7 +173,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteComment(Integer commentNum){ //댓글 삭제
+    public void deleteComment(Integer commentNum) { //댓글 삭제
         Comment comment = commentRepository.findById(commentNum).orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
         notificationRepository.deleteAllByCommentNum(comment); // 알림 삭제
         replyRepository.deleteAllByCommentNum(comment); // 대댓글 삭제
@@ -175,14 +181,14 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteReply(Integer replyNum){ //대댓글 삭제
+    public void deleteReply(Integer replyNum) { //대댓글 삭제
         Reply reply = replyRepository.findById(replyNum).orElseThrow(() -> new RuntimeException("대댓글을 찾을 수 없습니다."));
         notificationRepository.deleteAllByReplyNum(reply); //알림 삭제
         replyRepository.deleteById(replyNum);
     }
 
     @Transactional
-    public void deletePost(Integer postNum){ //게시글 삭제
+    public void deletePost(Integer postNum) { //게시글 삭제
         Post post = boardRepository.findByPostNum(postNum);
         notificationRepository.deleteAllByPostNum(post);
         replyRepository.deleteAllByPostNum(post);
@@ -192,16 +198,16 @@ public class BoardService {
     }
 
     @Transactional
-    public void updatePost(Integer postNum, String boardType, String content, String title,MultipartFile[] files)throws IOException{
+    public void updatePost(Integer postNum, String boardType, String content, String title, MultipartFile[] files) throws IOException {
         Post post = boardRepository.findById(postNum).orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
         post.setTitle(title); //제목
         post.setBoardType(boardType); //게시판
         post.setContent(content); // 내용
 
         List<PostImage> images = boardImageRepository.findByPost(post); // 게시글 사진
-        if(!images.isEmpty()){ // 서버에 저장한 게시글 사진 삭제
-            for(PostImage postImage : images){
-                File file = new File(uploadDir +File.separator + postImage.getImageUrl());
+        if (!images.isEmpty()) { // 서버에 저장한 게시글 사진 삭제
+            for (PostImage postImage : images) {
+                File file = new File(uploadDir + File.separator + postImage.getImageUrl());
                 if (file.delete()) {
                     System.out.println("파일이 성공적으로 삭제되었습니다: " + postImage.getImageUrl());
                 } else {
@@ -225,8 +231,6 @@ public class BoardService {
             }
         }
     }
-
-
 
 
 }

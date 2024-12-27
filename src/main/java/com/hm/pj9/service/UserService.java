@@ -3,9 +3,11 @@ package com.hm.pj9.service;
 import com.hm.pj9.model.*;
 import com.hm.pj9.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,10 @@ import java.util.Map;
 
 @Service
 public class UserService {
+
+    @Value("${file.upload-dir}")
+    private String uploadDir; // 파일을 저장할 디렉토리 경로
+
     @Autowired
     private UserRepository userRepository;
 
@@ -113,22 +119,22 @@ public class UserService {
         List<Comment> comments = commentRepository.findAllByCommenterId(user);
         List<Reply> replies = replyRepository.findAllByReplierId(user);
 
-        deleteNotification(posts,comments,replies,user);
-        deleteReply(posts,comments,replies,user);
-        deleteComment(posts,user);
-        deletePost(posts,user);
+        deleteNotification(posts, comments, replies, user);
+        deleteReply(posts, comments, replies, user);
+        deleteComment(posts, user);
+        deletePost(posts, user);
         deleteChat(userId);
         deleteAccount(userId);
     }
 
-    public void deleteNotification(List<Post> posts, List<Comment> comments, List<Reply> replies, User user){
-        for(Post post : posts){
+    public void deleteNotification(List<Post> posts, List<Comment> comments, List<Reply> replies, User user) {
+        for (Post post : posts) {
             notificationRepository.deleteAllByPostNum(post);
         }
-        for(Comment comment: comments){
+        for (Comment comment : comments) {
             notificationRepository.deleteAllByCommentNum(comment);
         }
-        for (Reply reply : replies){
+        for (Reply reply : replies) {
             notificationRepository.deleteAllByReplyNum(reply);
         }
 
@@ -137,14 +143,14 @@ public class UserService {
         System.out.println("계정과 관련된 알림이 전부 삭제되었습니다");
     }
 
-    public void deleteReply(List<Post> posts, List<Comment> comments, List<Reply> replies, User user){
-        for(Post post : posts){
+    public void deleteReply(List<Post> posts, List<Comment> comments, List<Reply> replies, User user) {
+        for (Post post : posts) {
             replyRepository.deleteAllByPostNum(post);
         }
-        for(Comment comment: comments){
+        for (Comment comment : comments) {
             replyRepository.deleteAllByCommentNum(comment);
         }
-        for (Reply reply : replies){
+        for (Reply reply : replies) {
             replyRepository.deleteAllByReplyNum(reply);
         }
 
@@ -153,8 +159,8 @@ public class UserService {
         System.out.println("계정과 관련된 대댓글이 전부 삭제되었습니다");
     }
 
-    public void deleteComment(List<Post> posts, User user){
-        for(Post post : posts){
+    public void deleteComment(List<Post> posts, User user) {
+        for (Post post : posts) {
             commentRepository.deleteAllByPostNum(post);
         }
         commentRepository.deleteAllByCommenterId(user);
@@ -162,21 +168,37 @@ public class UserService {
         System.out.println("계정과 관련된 댓글이 전부 삭제되었습니다");
     }
 
-    public void deletePost(List<Post> posts, User user){
-        for(Post post : posts){
+    public void deletePost(List<Post> posts, User user) {
+        for (Post post : posts) {
+            List<PostImage> images = boardImageRepository.findByPost(post);
+            for (PostImage image : images) { // 서버에 저장했던 파일들 삭제
+                String imageName = image.getImageUrl();
+                File file = new File(uploadDir + File.separator + imageName);
+
+                if (file.exists()) {
+                    if (file.delete()) {
+                        System.out.println("이미지 삭제 성공: " + imageName);
+                    } else {
+                        System.out.println("이미지 삭제 실패: " + imageName);
+                    }
+                } else {
+                    System.out.println("이미지 파일이 존재하지 않습니다: " + imageName);
+                }
+
+            }
             boardImageRepository.deleteAllByPost(post);
         }
         boardRepository.deleteAllByAuthor(user);
         System.out.println("계정과 관련된 게시글이 전부 삭제되었습니다");
     }
 
-    public void deleteChat(String userId){
+    public void deleteChat(String userId) {
         chatRepository.deleteAllByFromUserIdOrToUserId(userId, userId);
         System.out.println("계정과 관련된 채팅이 전부 삭제되었습니다");
 
     }
 
-    public void deleteAccount(String userId){
+    public void deleteAccount(String userId) {
         userRepository.deleteByUserId(userId);
         System.out.println("계정과 관련된 채팅이 전부 삭제되었습니다");
     }
