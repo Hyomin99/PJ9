@@ -145,7 +145,7 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
-    public List<Post> getAllPostsSortedByDate(){
+    public List<Post> getAllPostsSortedByDate() {
         return boardRepository.findAll(Sort.by(Sort.Order.desc("createdAt"))); // createdAt 기준으로 내림차순 정렬
     }
 
@@ -210,32 +210,36 @@ public class BoardService {
         post.setBoardType(boardType); //게시판
         post.setContent(content); // 내용
 
-        List<PostImage> images = boardImageRepository.findByPost(post); // 게시글 사진
-        if (!images.isEmpty()) { // 서버에 저장한 게시글 사진 삭제
-            for (PostImage postImage : images) {
-                File file = new File(uploadDir + File.separator + postImage.getImageUrl());
-                if (file.delete()) {
-                    System.out.println("파일이 성공적으로 삭제되었습니다: " + postImage.getImageUrl());
-                } else {
-                    System.out.println("파일 삭제에 실패했거나 파일이 존재하지 않습니다: " + postImage.getImageUrl());
+
+        if (files != null) {
+            List<PostImage> images = boardImageRepository.findByPost(post); // 게시글 사진
+            if (!images.isEmpty()) { // 서버에 저장한 게시글 사진 삭제
+                for (PostImage postImage : images) {
+                    File file = new File(uploadDir + File.separator + postImage.getImageUrl());
+                    if (file.delete()) {
+                        System.out.println("파일이 성공적으로 삭제되었습니다: " + postImage.getImageUrl());
+                    } else {
+                        System.out.println("파일 삭제에 실패했거나 파일이 존재하지 않습니다: " + postImage.getImageUrl());
+                    }
+                }
+            }
+
+            boardImageRepository.deleteAllByPost(post); //db에 저장된 사진들 삭제
+
+
+            for (MultipartFile file : files) { // 사진들 다시 저장
+                if (!file.isEmpty()) {
+                    String fileName = file.getOriginalFilename(); // 원래 파일 이름
+                    File destinationFile = new File(uploadDir + File.separator + fileName);
+                    file.transferTo(destinationFile); // 파일 저장
+                    PostImage postImage = new PostImage();
+                    postImage.setPost(post); // 게시글 번호 설정
+                    postImage.setImageUrl(fileName); // 이미지 URL 설정
+                    boardImageRepository.save(postImage);
                 }
             }
         }
 
-        boardImageRepository.deleteAllByPost(post); //db에 저장된 사진들 삭제
-
-
-        for (MultipartFile file : files) { // 사진들 다시 저장
-            if (!file.isEmpty()) {
-                String fileName = file.getOriginalFilename(); // 원래 파일 이름
-                File destinationFile = new File(uploadDir + File.separator + fileName);
-                file.transferTo(destinationFile); // 파일 저장
-                PostImage postImage = new PostImage();
-                postImage.setPost(post); // 게시글 번호 설정
-                postImage.setImageUrl(fileName); // 이미지 URL 설정
-                boardImageRepository.save(postImage);
-            }
-        }
     }
 
 

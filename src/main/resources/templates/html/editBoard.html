@@ -35,9 +35,10 @@
     <label>기존 이미지:</label>
     <div id="existing-images">
         <div th:each="image : ${images}">
-            <img th:src="${webUrl + image.url}" alt="기존 이미지" class="image-preview">
+            <img th:src="@{/img/{imageUrl}(imageUrl=${image.imageUrl})}" alt="기존 이미지" class="image-preview">
         </div>
     </div>
+
 
     <!-- 새 이미지 업로드 -->
     <label for="images">새 이미지 업로드:</label>
