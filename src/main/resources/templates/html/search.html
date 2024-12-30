@@ -26,10 +26,11 @@
                onclick="openSmallWindowNotification('/notice')">🔔 알림</a> | |
             <a href="javascript:void(0);" id="info-link" onclick="openSmallWindowMyInfo('/notice')">🔒 내
                 정보</a> | |
-            <a th:href="@{/logout}" id="logout-link">👋 로그아웃</a> | |
             <a th:href="@{/create/board}" id="create-link">📝 글 작성</a> | |
             <a href="javascript:void(0);" id="mychat-list" onclick="openSmallWindowChat('/chat/list')">📧
-                채팅</a>
+                채팅</a> | |
+            <a th:href="@{/logout}" id="logout-link">👋 로그아웃</a> | |
+            <a th:href="@{/delete/user}" onclick="return confirm('계정 탈퇴 하시겠습니까?');">💀 계정 탈퇴</a>
         </th:block>
         <th:block th:if="${sessionId == null}"> <!-- 비로그인 상태 -->
             <a th:href="@{/signin}" id="login-link">로그인</a>

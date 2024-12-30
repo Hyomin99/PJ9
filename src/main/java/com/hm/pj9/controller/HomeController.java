@@ -32,7 +32,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model, HttpSession session) { //홈페이지
-        List<Post> posts = boardService.getAllPosts();
+        List<Post> posts = boardService.getAllPostsSortedByDate();
         String sessionId = (String) session.getAttribute("userId");
         model.addAttribute("posts", posts);
         model.addAttribute("sessionId", sessionId);
@@ -66,11 +66,11 @@ public class HomeController {
     }
 
     @PostMapping("signup/check")
-    public String signUpCheck(@RequestParam String userId, @RequestParam String userPw1) { //계정 생성
+    public String signUpCheck(@RequestParam String userId, @RequestParam String userPw1, HttpSession session) { //계정 생성
         System.out.println("아이디 " + userId);
         System.out.println("비밀번호 " + userPw1);
         userService.createAccount(userId, userPw1);
-
+        session.setAttribute("userId", userId);
         return  "redirect:/";
     }
 

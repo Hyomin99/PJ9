@@ -4,6 +4,7 @@ import com.hm.pj9.model.*;
 import com.hm.pj9.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,7 +106,7 @@ public class BoardService {
                 String fileName = file.getOriginalFilename(); // 원래 파일 이름
                 System.out.println("파일 이름 : " + fileName);
                 File destinationFile = new File(uploadDir + File.separator + fileName);
-                System.out.println("저장할 파일 이름 : " + destinationFile.getName());
+                System.out.println("저장할 파일 경로 : " + destinationFile.getAbsolutePath());
 
                 try {
                     file.transferTo(destinationFile);
@@ -142,6 +143,10 @@ public class BoardService {
 
     public List<Post> getAllPosts() {
         return boardRepository.findAll();
+    }
+
+    public List<Post> getAllPostsSortedByDate(){
+        return boardRepository.findAll(Sort.by(Sort.Order.desc("createdAt"))); // createdAt 기준으로 내림차순 정렬
     }
 
 
@@ -195,6 +200,7 @@ public class BoardService {
         commentRepository.deleteAllByPostNum(post);
         boardImageRepository.deleteAllByPost(post);
         boardRepository.deleteById(postNum);
+
     }
 
     @Transactional

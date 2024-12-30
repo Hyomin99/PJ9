@@ -123,7 +123,9 @@ public class BoardController {
     @GetMapping("post/edit/{postNum}")
     public String editPost1(@PathVariable Integer postNum, Model model, HttpSession session) {
         Post post = boardService.getPost(postNum);
+        List<PostImage> images = boardService.getPostImg(post);
         model.addAttribute("post", post);
+        model.addAttribute("images", images);
         model.addAttribute("webUrl", webUrl);
         String targetUrl = "editBoard";
         return checkSession(session,targetUrl);
