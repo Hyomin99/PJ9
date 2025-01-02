@@ -49,4 +49,4 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo pkill -f 'java -jar' || true
-            nohup java -jar /www/pj9/store/*.jar > /www/pj9/store/app.log 2>&1 &
+            nohup java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
