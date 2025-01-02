@@ -32,7 +32,7 @@
     <ul class="image-list">
         <th:block th:each="image : ${img}">
             <li class="image-item">
-                <img th:src="@{/img/{imageUrl}(imageUrl=${image.imageUrl})}" alt="게시글 이미지" class="post-image"/>
+                <img th:src="@{/images/{imageUrl}(imageUrl=${image.imageUrl})}" alt="게시글 이미지" class="post-image"/>
             </li>
         </th:block>
     </ul>

@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -172,7 +173,7 @@ public class BoardService {
     }
 
 
-    public List<Post> getPostById(String targetUserId) { // 제목 또는 내용으로 검색
+    public List<Post> getPostById(String targetUserId) { // 사용자 ID로 검색
         User user = userRepository.findById(targetUserId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         return boardRepository.findAllByAuthor(user);
     }
@@ -209,9 +210,9 @@ public class BoardService {
         post.setTitle(title); //제목
         post.setBoardType(boardType); //게시판
         post.setContent(content); // 내용
+        System.out.println(Arrays.toString(files));
 
-
-        if (files != null) {
+        if (files.length != 0) {
             List<PostImage> images = boardImageRepository.findByPost(post); // 게시글 사진
             if (!images.isEmpty()) { // 서버에 저장한 게시글 사진 삭제
                 for (PostImage postImage : images) {
