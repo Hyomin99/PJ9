@@ -148,7 +148,7 @@ public class HomeController {
 
     }
 
-    public String checkSession(HttpSession session, String targetUrl) {
+    public String checkSession(HttpSession session, String targetUrl) { //로그인 안하면 로그인하도록
         // 세션에서 userId를 확인
         Object userId = session.getAttribute("userId");
 
