@@ -40,7 +40,7 @@ jobs:
           source: "build/libs/*.jar"
           target: "/www/pj9/store"
 
-      ### 📌 6. EC2에서 애플리케이션 재시작 뭐가 문제지
+      ### 📌 6. EC2에서 애플리케이션 재시작 Wkwmd
       - name: Restart Application on EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
