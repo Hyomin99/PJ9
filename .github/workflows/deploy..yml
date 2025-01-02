@@ -1,0 +1,52 @@
+name: Deploy Spring Boot to AWS EC2 (Gradle)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04  # Ubuntu 22.04 환경에서 실행
+
+    steps:
+      ### 📌 1. 레포지토리 체크아웃
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ### 📌 2. JDK 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      ### 📌 3. Gradle 권한 부여
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      ### 📌 4. Gradle로 애플리케이션 빌드
+      - name: Build with Gradle
+        run: |
+          ./gradlew clean build -x test
+
+      ### 📌 5. 빌드된 JAR 파일 EC2로 전송
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/libs/*.jar"
+          target: "/www/pj9/store"
+
+      ### 📌 6. EC2에서 애플리케이션 재시작
+      - name: Restart Application on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo pkill -f 'java -jar' || true
+            nohup java -jar /www/pj9/store/*.jar > /www/pj9/store/app.log 2>&1 &
