@@ -143,7 +143,7 @@ public class HomeController {
     public String deleteUser(HttpSession session){ //계정 탈퇴
         String userId = (String) session.getAttribute("userId");
         userService.deleteUser(userId);
-        session.invalidate(); // 세션 무효화
+        session.invalidate();
         return "redirect:/";
 
     }
