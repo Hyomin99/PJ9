@@ -51,4 +51,10 @@ jobs:
           script: |
             cd ~
             sudo chmod +x /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar
+            if pgrep -f 'PJ9-0.0.1-SNAPSHOT.jar' > /dev/null; then
+            echo "⚠️ 기존 PJ9 애플리케이션을 종료합니다."
+            sudo kill -9 $(pgrep -f 'PJ9-0.0.1-SNAPSHOT.jar')
+            else
+            echo "✅ 실행 중인 PJ9 애플리케이션이 없습니다."
+            fi
             sudo nohup java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
