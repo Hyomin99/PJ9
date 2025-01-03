@@ -39,15 +39,3 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar"
           target: "/www/pj9/store"
-
-
-      ### 📌 6. EC2에서 애플리케이션 재시작
-      - name: Restart Application on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i "${{ secrets.EC2_SSH_KEY }}" ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~
-            sudo pkill -f 'java -jar' || true
-            sudo chmod +x /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar
-            sudo nohup java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
-          EOF
-
