@@ -41,7 +41,7 @@ jobs:
           target: "/www/pj9/store"
 
 
-      ### 📌 6. EC2에서 애플리케이션 재시작 Wkwmddd
+      ### 📌 6. EC2에서 애플리케이션 재시작 ㅈㄷㅂ
       - name: Restart Application on EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
