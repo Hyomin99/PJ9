@@ -40,7 +40,7 @@ jobs:
           source: "build/libs/*.jar"
           target: "/www/pj9/store"
 
-      ### 📌 6. EC2에서 애플리케이션 재시작 Wkwmddd
+      ### 📌 6. EC2에서 애플리케이션 재시작
       - name: Restart Application on EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -48,6 +48,21 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~
-            sudo pkill -f 'java -jar' || true
-            sudo java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
+            # 작업 디렉터리로 이동  
+            cd /www/pj9/store/build/libs  
+            
+            # 기존 Java 프로세스 종료  
+            sudo pkill -f 'java -jar' || true  
+            
+            # JAR 파일 실행 권한 부여  
+            sudo chmod +x PJ9-0.0.1-SNAPSHOT.jar  
+            
+            # Java 실행 환경 확인  
+            java -version || { echo "Java가 설치되지 않았습니다."; exit 1; }
+            
+            # 애플리케이션 실행  
+            sudo nohup java -jar PJ9-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            
+            # 실행 확인  
+            sleep 5  
+            pgrep -f 'java -jar' > /dev/null && echo "✅ 애플리케이션이 성공적으로 시작되었습니다." || { echo "❌ 애플리케이션 시작 실패."; exit 1; }
