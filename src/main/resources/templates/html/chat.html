@@ -137,7 +137,7 @@
 
     var stompClient = null;
     function connect() {
-        var socket = new WebSocket("wss://pj9.store/ws");
+        var socket = new SockJS('https://pj9.store/ws');
         stompClient = Stomp.over(socket);
         var userId = document.getElementById("userId").value;
         console.log("연결될 때 userID: " + userId);
