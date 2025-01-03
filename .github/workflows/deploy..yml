@@ -51,6 +51,9 @@ jobs:
           script: |
             cd ~
             sudo chmod +x /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar
-            sudo kill  $(pgrep -f 'PJ9-0.0.1-SNAPSHOT.jar')
-            sleep 5
+            if sudo fuser -k 8416/tcp > /dev/null; then
+            echo "⚠️ 포트 8416을 사용 중인 기존 PJ9 애플리케이션을 종료했습니다."
+            else
+            echo "✅ 포트 8416을 사용 중인 프로세스가 없습니다."
+            fi
             sudo nohup java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
