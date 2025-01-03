@@ -39,3 +39,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar"
           target: "/www/pj9/store"
+
+
+      ### 📌 6. EC2에서 애플리케이션 재시작 Wkwmddd
+      - name: Restart Application on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~
+            sudo chmod +x /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar
+            sudo nohup java -jar /www/pj9/store/build/libs/PJ9-0.0.1-SNAPSHOT.jar > /www/pj9/store/build/libs/app.log 2>&1 &
