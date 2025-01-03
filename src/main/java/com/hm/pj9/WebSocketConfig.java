@@ -34,6 +34,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
                         String userId = request.getHeaders().getFirst("userId");
+                        System.out.println("Received userId: " + userId);  // 로그 확인
                         if (userId != null) {
                             attributes.put("userId", userId);
                         }
