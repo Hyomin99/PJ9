@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +41,12 @@ public class UserService {
     private BoardImageRepository boardImageRepository;
 
 
-    public String createAccount(String userId, String userPw) { // 계정 생성
+    public void createAccount(String userId, String userPw) { // 계정 생성
         User user = new User();
         user.setUserId(userId);
         user.setUserPw(userPw);
 
         userRepository.save(user);
-        return "회원가입 완료";
     }
 
     public int signInCheck(String userId, String userPw) { //로그인
@@ -195,7 +193,6 @@ public class UserService {
     public void deleteChat(String userId) {
         chatRepository.deleteAllByFromUserIdOrToUserId(userId, userId);
         System.out.println("계정과 관련된 채팅이 전부 삭제되었습니다");
-
     }
 
     public void deleteAccount(String userId) {

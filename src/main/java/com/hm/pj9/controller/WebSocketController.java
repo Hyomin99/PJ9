@@ -3,14 +3,12 @@ package com.hm.pj9.controller;
 import com.hm.pj9.model.ChatMessage;
 import com.hm.pj9.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,38 +24,58 @@ import java.util.Map;
 @Controller
 public class WebSocketController {
 
-    @Value("${default.web.url}")
-    private String webUrl;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private ChatService chatService;
 
 
+    /*
+    * 채팅 목록
+    * */
     @GetMapping("chat/list")
-    public String chatList(){ //채팅 목록 페이지
-
+    public String chatList() { //채팅 목록 페이지
         return "chatList";
     }
 
-
     @ResponseBody
     @GetMapping("get/chat/list")
-    public List<ChatMessage> getChatList(HttpSession session){ // 채팅 목록 가져오기
+    public List<ChatMessage> getChatList(HttpSession session) { // 채팅 목록 가져오기
         String userId = (String) session.getAttribute("userId");
         return chatService.getChatById(userId);
     }
 
+
+    /*
+    * 채팅 내용
+    * */
+
     @ResponseBody
     @GetMapping("get/chat/{toUserId}")
-    public Map<String, List<ChatMessage>> getChats(HttpSession session , @PathVariable String toUserId){ // 본인아이디, 상대 아이디에 해당하는 채팅 가져오기
+    public Map<String, List<ChatMessage>> getChats(HttpSession session, @PathVariable String toUserId) { // 본인아이디, 상대 아이디에 해당하는 채팅 가져오기
         String userId = (String) session.getAttribute("userId");
-
         return chatService.getSpecificChats(userId, toUserId);
     }
 
+    @GetMapping("chat/{toUserId}")
+    public String chat(HttpSession session, Model model, @PathVariable String toUserId) { //채팅 페이지로 전환
+
+        model.addAttribute("userId", session.getAttribute("userId"));
+        model.addAttribute("toUserId", toUserId);
+        String targetUrl = "chat";
+        return checkSession(session, targetUrl);
+    }
+
+    public String checkSession(HttpSession session, String targetUrl) { // 세션 확인
+        Object userId = session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/signin";
+        }
+        return targetUrl;
+    }
+
+    /*
+    * 소켓 관련
+    * */
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) { // 처음 소켓 연결 시 실행되는 메서드
@@ -81,27 +99,4 @@ public class WebSocketController {
         return null;
     }
 
-
-    @GetMapping("chat/{toUserId}")
-    public String chat(HttpSession session, Model model, @PathVariable String toUserId){ //채팅 페이지로 전환
-
-        model.addAttribute("userId", (String)session.getAttribute("userId"));
-        model.addAttribute("toUserId", toUserId);
-        model.addAttribute("webUrl", webUrl);
-        String targetUrl =  "chat";
-        return checkSession(session, targetUrl);
-    }
-
-    public String checkSession(HttpSession session, String targetUrl) {
-        // 세션에서 userId를 확인
-        Object userId = session.getAttribute("userId");
-
-        // userId가 없으면 /login 페이지로 리디렉션
-        if (userId == null) {
-            return "redirect:/signin";
-        }
-
-        // userId가 있으면 해당 페이지로 진행
-        return targetUrl;
-    }
 }
