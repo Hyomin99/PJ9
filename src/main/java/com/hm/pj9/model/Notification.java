@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Table(name = "notifications")
 public class Notification {
 
+
+
     @Id
     @Column(name = "notification_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +44,29 @@ public class Notification {
     @Column(name = "created_at")
     private LocalDateTime createdAt; //작성 시간
 
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now(); // 현재 시간 설정
     }
 
+    public Notification(){
 
+    }
+
+    public Notification(Post postNum, Comment commentNum, User targetId, String notificationType, byte readStatus) {
+        this.postNum = postNum;
+        this.commentNum = commentNum;
+        this.targetId = targetId;
+        this.notificationType = notificationType;
+        this.readStatus = readStatus;
+    }
+
+    public Notification(Post postNum, Reply replyNum, User targetId, String notificationType, byte readStatus) {
+        this.postNum = postNum;
+        this.replyNum = replyNum;
+        this.targetId = targetId;
+        this.notificationType = notificationType;
+        this.readStatus = readStatus;
+    }
 }

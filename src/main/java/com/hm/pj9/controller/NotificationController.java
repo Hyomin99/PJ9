@@ -1,7 +1,7 @@
 package com.hm.pj9.controller;
 
 import com.hm.pj9.model.NotificationResult;
-import com.hm.pj9.service.UserService;
+import com.hm.pj9.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class NotificationController {
     @Autowired
-    UserService userService;
+    NotificationService notificationService;
 
     /*
     * 사용자 알림
@@ -21,7 +21,7 @@ public class NotificationController {
 
     @GetMapping("/notice")
     public String notice(Model model, HttpSession session) { // 사용자 알림 가져오기
-        NotificationResult notificationResult = userService.getNotification((String) session.getAttribute("userId"));
+        NotificationResult notificationResult = notificationService.getNotification((String) session.getAttribute("userId"));
         model.addAttribute("notification", notificationResult.getNotifications());
         model.addAttribute("postCountMap", notificationResult.getPostCountMap());
         model.addAttribute("commentCountMap", notificationResult.getcommentCountMap());
@@ -31,7 +31,7 @@ public class NotificationController {
 
     @GetMapping("check/notification/{post_num}")
     public String checkNotification( @PathVariable Integer post_num, HttpSession session, @RequestParam String type) { //알림 확인
-        userService.readNotification(post_num, (String) session.getAttribute("userId"), type);
+        notificationService.readNotification(post_num, (String) session.getAttribute("userId"), type);
         return  "redirect:/board/" + post_num;
     }
 

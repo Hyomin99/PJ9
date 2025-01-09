@@ -14,4 +14,11 @@ public class User {
     @Column(name = "user_pw")
     private String userPw;
 
+    public User(String userId, String userPw) {
+        this.userId = userId;
+        this.userPw = userPw;
+    }
+
+    public User() {
+    }
 }

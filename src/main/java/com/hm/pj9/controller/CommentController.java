@@ -3,7 +3,7 @@ package com.hm.pj9.controller;
 
 import com.hm.pj9.model.Comment;
 import com.hm.pj9.model.Reply;
-import com.hm.pj9.service.BoardService;
+import com.hm.pj9.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
-public class CommentReplyController {
+public class CommentController {
 
     @Autowired
-    BoardService boardService;
+    CommentService commentService;
 
     /*
      * 댓글 작성, 삭제
@@ -28,13 +28,13 @@ public class CommentReplyController {
         if (userId == null) {
             return "redirect:/signin";
         }
-        boardService.saveComment(comment, userId, postNum);
+        commentService.saveComment(comment, userId, postNum);
         return "redirect:/board/" + postNum;
     }
 
     @GetMapping("comment/delete")
     public String deleteComment(@RequestParam Integer commentNum, @RequestParam Integer postNum) {
-        boardService.deleteComment(commentNum);
+        commentService.deleteComment(commentNum);
         return "redirect:/board/" + postNum;
     }
 
@@ -48,14 +48,14 @@ public class CommentReplyController {
         if (userId == null) {
             return "redirect:/signin";
         }
-        boardService.saveReply(reply, userId, postNum, commentNum);
+        commentService.saveReply(reply, userId, postNum, commentNum);
         return "redirect:/board/" + postNum;
 
     }
 
     @GetMapping("reply/delete")
     public String deleteReply(@RequestParam Integer replyNum, @RequestParam Integer postNum) {
-        boardService.deleteReply(replyNum);
+        commentService.deleteReply(replyNum);
         return "redirect:/board/" + postNum;
     }
 

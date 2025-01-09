@@ -20,6 +20,4 @@ public interface BoardRepository extends JpaRepository<Post, Integer> {
     void deleteAllByAuthor(User user);
 
 
-
-
 }

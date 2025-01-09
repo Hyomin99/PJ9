@@ -1,7 +1,8 @@
 package com.hm.pj9.controller;
 
 import com.hm.pj9.model.User;
-import com.hm.pj9.service.UserService;
+import com.hm.pj9.service.AuthService;
+import com.hm.pj9.service.UserDeletionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,9 @@ import java.util.Map;
 public class AuthController { // 사용자 관련 컨트롤러
 
     @Autowired
-    private UserService userService;
+    private UserDeletionService userDeletionService;
+    @Autowired
+    private AuthService authService;
 
     /*
      * 로그인
@@ -28,7 +31,7 @@ public class AuthController { // 사용자 관련 컨트롤러
 
     @PostMapping("signin/check")
     public String signInCheck(@RequestParam String userId, @RequestParam String userPw, HttpSession session) { //로그인 누를 시 아이디 비번 확인
-        int result = userService.signInCheck(userId, userPw);
+        int result = authService.signInCheck(userId, userPw);
         if (result == 1) {
             session.setAttribute("userId", userId);
             return "redirect:/";
@@ -47,7 +50,7 @@ public class AuthController { // 사용자 관련 컨트롤러
 
     @PostMapping("signup/check")
     public String signUpCheck(@RequestParam String userId, @RequestParam String userPw1, HttpSession session) { //계정 생성
-        userService.createAccount(userId, userPw1);
+        authService.createAccount(userId, userPw1);
         session.setAttribute("userId", userId);
         return "redirect:/";
     }
@@ -55,7 +58,7 @@ public class AuthController { // 사용자 관련 컨트롤러
     @PostMapping("signup/duplication/check")
     @ResponseBody
     public Map<String, Boolean> duplicationCheck(@RequestBody User user) { //ID 중복 확인
-        boolean result = userService.duplicationId(user.getUserId());
+        boolean result = authService.duplicationId(user.getUserId());
         Map<String, Boolean> response = new HashMap<>();
         response.put("exists", result);
         return response;
@@ -78,7 +81,7 @@ public class AuthController { // 사용자 관련 컨트롤러
     @GetMapping("delete/user")
     public String deleteUser(HttpSession session) {
         String userId = (String) session.getAttribute("userId");
-        userService.deleteUser(userId);
+        userDeletionService.deleteUser(userId);
         session.invalidate();
         return "redirect:/";
     }
@@ -89,7 +92,7 @@ public class AuthController { // 사용자 관련 컨트롤러
     @GetMapping("my/info")
     public String myInfo(Model model, HttpSession session) {
         String userId = (String) session.getAttribute("userId");
-        Map<String, List<?>> userInfo = userService.getUserInfo(userId);
+        Map<String, List<?>> userInfo = authService.getUserInfo(userId);
         model.addAttribute("posts", userInfo.get("posts"));
         model.addAttribute("comments", userInfo.get("comments"));
         model.addAttribute("replies", userInfo.get("replies"));

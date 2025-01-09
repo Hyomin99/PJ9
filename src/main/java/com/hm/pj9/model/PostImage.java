@@ -21,4 +21,12 @@ public class PostImage {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    public PostImage() {
+    }
+
+    public PostImage(Post post, String imageUrl) {
+        this.post = post;
+        this.imageUrl = imageUrl;
+    }
 }

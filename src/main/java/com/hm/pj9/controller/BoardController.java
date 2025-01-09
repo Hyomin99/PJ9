@@ -5,6 +5,7 @@ import com.hm.pj9.model.Post;
 import com.hm.pj9.model.PostImage;
 import com.hm.pj9.model.Reply;
 import com.hm.pj9.service.BoardService;
+import com.hm.pj9.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ public class BoardController {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private CommentService commentService;
 
     /*
      * 게시글 작성, 삭제
@@ -60,10 +64,10 @@ public class BoardController {
         List<PostImage> postImage = boardService.getPostImg(savedPost); //게시물 이미지 가져오기
         model.addAttribute("img", postImage);
 
-        List<Comment> comments = boardService.getComments(savedPost); //게시물 댓글 가져오기
+        List<Comment> comments = commentService.getComments(savedPost); //게시물 댓글 가져오기
         model.addAttribute("comments", comments);
 
-        List<Reply> replies = boardService.getReplies(savedPost); //게시물 대댓글 가져오기
+        List<Reply> replies = commentService.getReplies(savedPost); //게시물 대댓글 가져오기
         model.addAttribute("replies", replies);
 
         model.addAttribute("userId",session.getAttribute("userId"));
