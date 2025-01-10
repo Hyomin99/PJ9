@@ -79,7 +79,7 @@ public class BoardController {
      * */
 
     @GetMapping("post/edit/{postNum}")
-    public String editPost1(@PathVariable Integer postNum, Model model) {
+    public String editPostPage(@PathVariable Integer postNum, Model model) {
         Post post = boardService.getPost(postNum);
         List<PostImage> images = boardService.getPostImg(post);
         model.addAttribute("post", post);
@@ -88,7 +88,7 @@ public class BoardController {
     }
 
     @PostMapping("update/post")
-    public String editPost2(@ModelAttribute Post post, @RequestParam("images") MultipartFile[] images) { //수정 게시글 저장
+    public String editPostSave(@ModelAttribute Post post, @RequestParam("images") MultipartFile[] images) { //수정 게시글 저장
         try {
             boardService.updatePost(post.getPostNum(), post.getBoardType(), post.getContent(), post.getTitle(), images);
         } catch (IOException e) {

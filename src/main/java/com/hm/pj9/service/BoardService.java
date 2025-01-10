@@ -101,7 +101,7 @@ public class BoardService {
         post.setBoardType(boardType); //게시판
         post.setContent(content); // 내용
 
-        if (files.length != 0) {
+        if (files.length != 0 && !files[0].isEmpty()) {
             List<PostImage> images = boardImageRepository.findByPost(post); // 게시글 사진
             if (!images.isEmpty()) { // 서버에 저장한 게시글 사진 삭제
                 for (PostImage postImage : images) {
