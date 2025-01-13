@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import org.mindrot.jbcrypt.BCrypt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,14 @@ public class AuthController { // 사용자 관련 컨트롤러
 
     @PostMapping("signin/check")
     public String signInCheck(@RequestParam String userId, @RequestParam String userPw, HttpSession session) { //로그인 누를 시 아이디 비번 확인
-        int result = authService.signInCheck(userId, userPw);
-        if (result == 1) {
+        String storedPw = authService.getPw(userId);
+        if ( storedPw != null && BCrypt.checkpw(userPw, storedPw) ) {
             session.setAttribute("userId", userId);
             return "redirect:/";
         } else {
             return "redirect:/signin";
         }
+
     }
 
     /*
@@ -50,7 +51,8 @@ public class AuthController { // 사용자 관련 컨트롤러
 
     @PostMapping("signup/check")
     public String signUpCheck(@RequestParam String userId, @RequestParam String userPw1, HttpSession session) { //계정 생성
-        authService.createAccount(userId, userPw1);
+        String hashedPassword = BCrypt.hashpw(userPw1, BCrypt.gensalt());
+        authService.createAccount(userId, hashedPassword);
         session.setAttribute("userId", userId);
         return "redirect:/";
     }

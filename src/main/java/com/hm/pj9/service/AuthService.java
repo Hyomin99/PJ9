@@ -33,15 +33,20 @@ public class AuthService {
         userRepository.save(new User(userId,userPw));
     }
 
-    public int signInCheck(String userId, String userPw) { //로그인
-        String result = userRepository.getPwById(userId);
-        if (result != null && result.equals(userPw)) {
-            return 1;
-        } else {
-            return 0; //틀렸을때
-        }
+//    public int signInCheck(String userId, String userPw) { //로그인
+//        String result = userRepository.getPwById(userId);
+//        if (result != null && result.equals(userPw)) {
+//            return 1;
+//        } else {
+//            return 0; //틀렸을때
+//        }
+//
+//    }
 
+    public String getPw(String id){
+        return userRepository.getPwById(id);
     }
+
 
     public boolean duplicationId(String userId) { //아이디 중복 확인
         return userRepository.existsById(userId);
