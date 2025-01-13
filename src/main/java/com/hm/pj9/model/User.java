@@ -6,6 +6,9 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@Table(name = "user", indexes = {
+        @Index(name = "idx_id", columnList = "user_id")
+})
 public class User {
 
     @Id

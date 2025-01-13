@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "comments")
+
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_commentNum", columnList = "comment_num")
+})
 public class Comment {
 
     @Id
