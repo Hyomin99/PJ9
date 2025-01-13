@@ -44,7 +44,8 @@
         <div class="post-list">
             <th:block th:each="post, iterStat : ${posts}" th:if="${iterStat.index < 20}"> <!-- 최대 20개 게시글 -->
                 <div class="post">
-                    <h4 th:text="${post.title}">게시글 제목</h4>
+                    <a th:text="${post.title}" th:href="@{/board/{postNum}(postNum=${post.postNum})}"
+                       style="font-size: 20px;">게시글 제목</a>
                     <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
                     <div class="dropdown" style="display: none;">
                         <ul>
@@ -52,8 +53,7 @@
                             <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
                         </ul>
                     </div>
-                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                    <p class="created-at" th:text="${post.formattedCreatedAt}">작성 시간</p>
                 </div>
             </th:block>
         </div>
@@ -65,16 +65,18 @@
             <th:block th:each="post, iterStat : ${posts}" th:if="${post.boardType == 'member_search'}">
                 <!-- 최대 10개 게시글 -->
                 <div class="post">
-                    <h4 th:text="${post.title}">게시글 제목</h4>
-                    <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
-                    <div class="dropdown" style="display: none;">
-                        <ul>
-                            <li class="dropdown-item" onclick="searchId()">ID로 검색</li>
-                            <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
-                        </ul>
+                    <a th:text="${post.title}" th:href="@{/board/{postNum}(postNum=${post.postNum})}"
+                       style="font-size: 20px;">게시글 제목</a>
+                    <div class="post-meta" >
+                        <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
+                        <div class="dropdown" style="display: none;">
+                            <ul>
+                                <li class="dropdown-item" onclick="searchId()">ID로 검색</li>
+                                <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
+                            </ul>
+                        </div>
+                        <p class="created-at" th:text="${post.formattedCreatedAt}">작성 시간</p>
                     </div>
-                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
                 </div>
             </th:block>
         </div>
@@ -86,7 +88,8 @@
             <th:block th:each="post, iterStat : ${posts}" th:if="${post.boardType == 'team_search'}">
                 <!-- 최대 10개 게시글 -->
                 <div class="post">
-                    <h4 th:text="${post.title}">게시글 제목</h4>
+                    <a th:text="${post.title}" th:href="@{/board/{postNum}(postNum=${post.postNum})}"
+                       style="font-size: 20px;">게시글 제목</a>
                     <p class="author" th:text="${post.author.userId}" onclick="toggleDropdown(event)">작성자</p>
                     <div class="dropdown" style="display: none;">
                         <ul>
@@ -94,8 +97,7 @@
                             <li class="dropdown-item" onclick="openSmallWindowChatContent()">채팅하기</li>
                         </ul>
                     </div>
-                    <p class="created-at" th:text="${post.createdAt}">작성 시간</p>
-                    <a th:href="@{/board/{postNum}(postNum=${post.postNum})}">자세히 보기</a>
+                    <p class="created-at" th:text="${post.formattedCreatedAt}">작성 시간</p>
                 </div>
             </th:block>
         </div>

@@ -14,16 +14,27 @@ body {
 }
 
 h1 {
-    text-align: center; /* 텍스트를 가운데 정렬 */
+    text-align: left; /* 텍스트를 가운데 정렬 */
     font-size: 2.5em; /* 제목 크기 증가 */
     margin-bottom: 20px; /* 제목과 내용 사이의 여백 추가 */
     color: #333; /* 제목 색상 */
 }
 
+/*.post-meta {*/
+/*    font-size: 1.1em; !* 메타 정보 크기 조정 *!*/
+/*    color: #666; !* 메타 정보 색상 *!*/
+/*    margin-bottom: 20px; !* 메타 정보와 내용 사이의 여백 *!*/
+/*}*/
 .post-meta {
     font-size: 1.1em; /* 메타 정보 크기 조정 */
     color: #666; /* 메타 정보 색상 */
     margin-bottom: 20px; /* 메타 정보와 내용 사이의 여백 */
+    display: flex; /* 플렉스 박스를 사용하여 한 줄로 배치 */
+    gap: 10px; /* 항목 간의 간격 조정 */
+}
+
+.post-meta p {
+    margin: 0; /* 기본 마진 제거 */
 }
 
 .image-title {
