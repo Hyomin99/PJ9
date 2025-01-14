@@ -96,15 +96,17 @@
         <button type="submit">작성</button>
     </form>
 </div>
-<script> document.querySelectorAll('.reply-button').forEach(button => {
-    button.addEventListener('click', function () {
-        const replyForm = this.nextElementSibling;
-        if (replyForm.style.display === 'none' || replyForm.style.display === '') {
-            replyForm.style.display = 'block'; // 보이게 함
-        } else {
-            replyForm.style.display = 'none';
-        }
+<script>
+    document.querySelectorAll('.reply-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const replyForm = this.nextElementSibling;
+            if (replyForm.style.display === 'none' || replyForm.style.display === '') {
+                replyForm.style.display = 'block'; // 보이게 함
+            } else {
+                replyForm.style.display = 'none';
+            }
+        });
     });
-}); </script>
+</script>
 </body>
 </html>
